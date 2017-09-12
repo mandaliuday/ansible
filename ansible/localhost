@@ -1,0 +1,3 @@
+[servers]
+django-local.tarams.com ansible_port=2211 ansible_host=localhost
+

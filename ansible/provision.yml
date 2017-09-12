@@ -1,0 +1,44 @@
+---
+
+- hosts: servers
+  vars_files:
+    - vars.yml
+  gather_facts: false
+  become: yes
+
+  tasks:
+    - name: Install system packages
+      apt: pkg={{ item }} update-cache=yes
+      with_items: "{{ system_packages }}"
+      become: true
+ 
+    - name: Save ssh key to server
+      copy: src={{ ssh_private_key }} dest=/root/.ssh/id_rsa mode=600
+      become: true
+
+    - name: Create directory for app
+      file: path={{ install_root }}/{{ project_name }} state=directory
+      become: true
+
+    - name: make sure postgresql server is running
+      service: name=postgresql state=started
+      become: true  
+
+    - name: create database
+      become_user: postgres
+      postgresql_db: name={{ db_name }}
+      become: true
+
+    - name: create database user
+      become_user: postgres
+      postgresql_user: db={{ db_name }} name={{ db_user }} password={{ db_password }} priv=ALL
+      become: true
+ 
+    - name: remove default nginx site
+      file: path=/etc/nginx/sites-enabled/default state=absent
+      become: true
+  
+- include: deploy.yml
+
+- include: cleanup.yml
+# vim:ft=ansible:
