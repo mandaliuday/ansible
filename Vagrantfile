@@ -20,7 +20,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.synced_folder "Django", "/srv/tarams/Django"
 
   config.vm.provider "virtualbox" do |vb|
-    vb.gui = true
     vb.customize ["modifyvm", :id, "--memory", "4096"]
     vb.customize ["modifyvm", :id, "--cpus", 4]
   end
